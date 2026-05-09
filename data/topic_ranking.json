@@ -1,0 +1,259 @@
+{
+  "generated_at": "2026-05-09",
+  "topics": [
+    {
+      "topic": "agents",
+      "label": "Agentic systems & orchestration",
+      "score": 89.329743,
+      "evidence_score": 46.916882,
+      "item_count": 37,
+      "sources": [
+        "AI.Dot Engineer",
+        "month graph"
+      ],
+      "representative_items": [
+        {
+          "source": "month graph",
+          "title": "Playground in Prod: Optimising Agents in Production Environments — Samuel Colvin, Pydantic",
+          "published": "2026-05-07",
+          "url": "https://www.youtube.com/watch?v=A48uhxfxbsM"
+        },
+        {
+          "source": "month graph",
+          "title": "Agentic Search for Context Engineering — Leonie Monigatti, Elastic",
+          "published": "2026-05-08",
+          "url": "https://www.youtube.com/watch?v=ynJyIKwjonM"
+        },
+        {
+          "source": "month graph",
+          "title": "MCP UI: Extending the frontier — Liad Yosef and Ido Salomon, MCP Apps",
+          "published": "2026-05-06",
+          "url": "https://www.youtube.com/watch?v=o-zkvb0iFDQ"
+        },
+        {
+          "source": "month graph",
+          "title": "Skill Issue: How We Used AI to Make Agents Actually Good at Supabase — Pedro Rodrigues, Supabase",
+          "published": "2026-05-04",
+          "url": "https://www.youtube.com/watch?v=GmAQKINjv1E"
+        },
+        {
+          "source": "month graph",
+          "title": "Software Engineering Is Becoming Plan and Review — Louis Knight-Webb, Vibe Kanban",
+          "published": "2026-05-02",
+          "url": "https://www.youtube.com/watch?v=W76woOYHlvY"
+        }
+      ]
+    },
+    {
+      "topic": "multimodal",
+      "label": "Multimodal, voice, vision & edge",
+      "score": 26.237945,
+      "evidence_score": 14.369083,
+      "item_count": 11,
+      "sources": [
+        "AI.Dot Engineer",
+        "month graph"
+      ],
+      "representative_items": [
+        {
+          "source": "month graph",
+          "title": "Voice AI: when is the \"Her\" moment? — Neil Zeghidour, Gradium AI",
+          "published": "2026-05-09",
+          "url": "https://www.youtube.com/watch?v=P_RI1kCkRbo"
+        },
+        {
+          "source": "month graph",
+          "title": "Give Your Chat Agent a Voice — Luke Harries, ElevenLabs",
+          "published": "2026-05-09",
+          "url": "https://www.youtube.com/watch?v=DCZZ3AJKzuc"
+        },
+        {
+          "source": "month graph",
+          "title": "How Transformers Finally Ate Vision – Isaac Robinson, Roboflow",
+          "published": "2026-05-08",
+          "url": "https://www.youtube.com/watch?v=VhfAVA3BG2I"
+        },
+        {
+          "source": "month graph",
+          "title": "Accelerating AI on Edge — Chintan Parikh and Weiyi Wang, Google DeepMind",
+          "published": "2026-05-05",
+          "url": "https://www.youtube.com/watch?v=Lm8BLHkxiAo"
+        },
+        {
+          "source": "month graph",
+          "title": "TLMs: Tiny LLMs and Agents on Edge Devices with LiteRT-LM — Cormac Brick, Google",
+          "published": "2026-05-03",
+          "url": "https://www.youtube.com/watch?v=BKWpYIWvAo4"
+        }
+      ]
+    },
+    {
+      "topic": "distribution",
+      "label": "Distribution & product surfaces",
+      "score": 15.896822,
+      "evidence_score": 8.500974,
+      "item_count": 16,
+      "sources": [
+        "AI.Dot Engineer",
+        "Wes Roth",
+        "month graph"
+      ],
+      "representative_items": [
+        {
+          "source": "month graph",
+          "title": "Scaling GitHub for your Agents — Sam Morrow, GitHub",
+          "published": "2026-04-27",
+          "url": "https://www.youtube.com/watch?v=0n3MKk7r60w"
+        },
+        {
+          "source": "month graph",
+          "title": "The Small Model Infrastructure Nobody Built (So We Did) — Filip Makraduli, Superlinked",
+          "published": "2026-05-05",
+          "url": "https://www.youtube.com/watch?v=qdh_x-uRs9g"
+        },
+        {
+          "source": "Wes Roth",
+          "title": "graph link: distribution",
+          "published": null,
+          "url": null
+        },
+        {
+          "source": "month graph",
+          "title": "Training an LLM from Scratch, Locally — Angelos Perivolaropoulos, ElevenLabs",
+          "published": "2026-05-04",
+          "url": "https://www.youtube.com/watch?v=UsB70Tf5zcE"
+        },
+        {
+          "source": "AI.Dot Engineer",
+          "title": "OpenAI Codex Masterclass — Vaibhav Srivastav & Katia Gil Guzman",
+          "published": null,
+          "url": "https://www.youtube.com/watch?v=MhHEGMFCEB0"
+        }
+      ]
+    },
+    {
+      "topic": "security",
+      "label": "Security & systemic risk",
+      "score": 9.429852,
+      "evidence_score": 5.95319,
+      "item_count": 4,
+      "sources": [
+        "The AI Daily Brief",
+        "Wes Roth",
+        "month graph"
+      ],
+      "representative_items": [
+        {
+          "source": "The AI Daily Brief",
+          "title": "graph link: Security & systemic risk",
+          "published": null,
+          "url": null
+        },
+        {
+          "source": "month graph",
+          "title": "World Banks JUST got scared...",
+          "published": "2026-05-08",
+          "url": "https://www.youtube.com/watch?v=fabe7nYQa1Q"
+        },
+        {
+          "source": "Wes Roth",
+          "title": "graph link: security",
+          "published": null,
+          "url": null
+        },
+        {
+          "source": "month graph",
+          "title": "US wants Claude all to itself... because it's \"TOO DANGEROUS\"",
+          "published": "2026-05-01",
+          "url": "https://www.youtube.com/watch?v=quCJwkDAx0g"
+        }
+      ]
+    },
+    {
+      "topic": "compute",
+      "label": "Compute economics & market structure",
+      "score": 9.149185,
+      "evidence_score": 5.544961,
+      "item_count": 6,
+      "sources": [
+        "Wes Roth",
+        "month graph"
+      ],
+      "representative_items": [
+        {
+          "source": "Wes Roth",
+          "title": "graph link: compute economics",
+          "published": null,
+          "url": null
+        },
+        {
+          "source": "month graph",
+          "title": "Mergeable by default: Building the context engine to save time and tokens — Peter Werry, Unblocked",
+          "published": "2026-05-03",
+          "url": "https://www.youtube.com/watch?v=5ID22ACI7IM"
+        },
+        {
+          "source": "month graph",
+          "title": "Mastering AI Pricing: Flexible & Agile Monetization — Mayank Pant, Stripe",
+          "published": "2026-05-01",
+          "url": "https://www.youtube.com/watch?v=CrqPcIZOOXA"
+        },
+        {
+          "source": "month graph",
+          "title": "Claude BROKE Wall Street Overnight...",
+          "published": "2026-05-06",
+          "url": "https://www.youtube.com/watch?v=rzVhPTSNWnE"
+        },
+        {
+          "source": "month graph",
+          "title": "AI just killed Crypto...",
+          "published": "2026-05-02",
+          "url": "https://www.youtube.com/watch?v=LMJb-_uL6lQ"
+        }
+      ]
+    },
+    {
+      "topic": "interpretability",
+      "label": "Interpretability & hidden behavior",
+      "score": 6.236754,
+      "evidence_score": 3.654919,
+      "item_count": 7,
+      "sources": [
+        "The AI Daily Brief",
+        "month graph"
+      ],
+      "representative_items": [
+        {
+          "source": "month graph",
+          "title": "we JUST figured out how AI thinks",
+          "published": "2026-05-09",
+          "url": "https://www.youtube.com/watch?v=Nn2eXwch-K0"
+        },
+        {
+          "source": "The AI Daily Brief",
+          "title": "graph link: Interpretability",
+          "published": null,
+          "url": null
+        },
+        {
+          "source": "month graph",
+          "title": "Collaborative AI Engineering: One Dev, Two Dozen Agents, Zero Alignment — Maggie Appleton, GitHub",
+          "published": "2026-04-26",
+          "url": "https://www.youtube.com/watch?v=ClWD8OEYgp8"
+        },
+        {
+          "source": "month graph",
+          "title": "What Do Models Still Suck At? - Peter Gostev, Arena.ai, BullshitBench",
+          "published": "2026-04-24",
+          "url": "https://www.youtube.com/watch?v=R7A8rX-09Zw"
+        },
+        {
+          "source": "month graph",
+          "title": "Mythos leaks, SpaceX buys Cursor and OpenAI drops GPT Image 2.0",
+          "published": "2026-04-22",
+          "url": "https://www.youtube.com/watch?v=ITT9xWeicWM"
+        }
+      ]
+    }
+  ]
+}

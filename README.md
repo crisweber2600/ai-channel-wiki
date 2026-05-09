@@ -40,9 +40,11 @@ The wiki also uses a recency-weighted consolidation pass so the newest evidence 
 - [Distribution & product surfaces](topics/distribution.md)
 - [Compute economics](topics/compute.md)
 - [Recency-weighting](topics/recency-weighting.md)
+- [Algorithmic topic re-ranking](topics/auto-ranked.md)
 
 ## Live processing
 
 A daily digest job is already configured to ingest the channels above and the podcast feed.
+The job also regenerates [Algorithmic topic re-ranking](topics/auto-ranked.md), which is the machine-scored ordering used to re-rank topics from transcript evidence.
 
 For the older compressed month summary, see the [source gist](https://gist.github.com/crisweber2600/231df3009d553b1fce61781db9e7d206).

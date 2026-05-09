@@ -49,6 +49,7 @@ If two items say similar things, the newer one should usually win *unless* the o
 ## Linked pages
 
 - [Graph map](map.md)
+- [Algorithmic topic re-ranking](auto-ranked.md)
 - [Wes Roth](../channels/wes-roth.md)
 - [AI.Dot Engineer](../channels/ai-dot-engineer.md)
 - [The AI Daily Brief](../podcasts/the-ai-daily-brief.md)

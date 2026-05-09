@@ -13,3 +13,4 @@
   - [Distribution & product surfaces](topics/distribution.md)
   - [Compute economics](topics/compute.md)
   - [Recency-weighting](topics/recency-weighting.md)
+  - [Algorithmic topic re-ranking](topics/auto-ranked.md)
