@@ -39,6 +39,7 @@ The wiki also uses a recency-weighted consolidation pass so the newest evidence 
 - [Multimodal, voice, vision & edge](topics/multimodal.md)
 - [Distribution & product surfaces](topics/distribution.md)
 - [Compute economics](topics/compute.md)
+- [Recency-weighting](topics/recency-weighting.md)
 
 ## Live processing
 
