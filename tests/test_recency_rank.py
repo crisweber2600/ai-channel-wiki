@@ -1,5 +1,7 @@
 from datetime import date
 from pathlib import Path
+import sys
+import types
 
 from recency_rank import (
     SourceItem,
@@ -9,6 +11,7 @@ from recency_rank import (
     score_topic_item,
     render_markdown_report,
     topic_embedding_signal,
+    discover_topics_from_items,
 )
 
 
@@ -123,3 +126,43 @@ topic: agents
     assert items[0].published == date(2026, 5, 8)
     assert items[0].url == "https://example.com/1"
     assert items[0].title == "Coordinating worker loops with tools"
+
+
+def test_sentence_transformer_backend_is_used_when_available(monkeypatch):
+    calls = {}
+
+    class FakeSentenceTransformer:
+        def __init__(self, model_name):
+            calls["model_name"] = model_name
+
+        def encode(self, texts, normalize_embeddings=False):
+            calls["texts"] = list(texts)
+            calls["normalize_embeddings"] = normalize_embeddings
+            if len(texts) == 1:
+                return [[1.0, 0.0, 0.0]]
+            return [[1.0, 0.0, 0.0] for _ in texts]
+
+    fake_module = types.SimpleNamespace(SentenceTransformer=FakeSentenceTransformer)
+    monkeypatch.setitem(sys.modules, "sentence_transformers", fake_module)
+
+    import recency_rank as rr
+
+    rr._embedding_backend.cache_clear()
+    rr._topic_embedding_profile.cache_clear()
+    score = rr.topic_embedding_signal("tool use and task routing", "agents")
+
+    assert score > 0
+    assert calls["model_name"] == "all-MiniLM-L6-v2"
+    assert calls["texts"]
+    assert calls["normalize_embeddings"] is True
+
+
+def test_discovered_topics_extend_rank_order():
+    items = [
+        SourceItem(source="Demo", title="New topic: model distillation at the edge", text="model distillation at the edge", published=date(2026, 5, 8), topic_hint="deployment", confidence=1.0),
+        SourceItem(source="Demo", title="Another note on deployment and distillation", text="deployment distillation", published=date(2026, 5, 7), topic_hint="deployment", confidence=1.0),
+    ]
+
+    topics = discover_topics_from_items(items)
+    assert "deployment" in topics
+    assert any(topic == "deployment" for topic in topics)

@@ -237,7 +237,7 @@ def slugify(text: str) -> str:
     return re.sub(r"\s+", " ", text).strip()
 
 
-def normalize_topic_name(value: str | None) -> str | None:
+def normalize_topic_name(value: str | None, *, allow_unknown: bool = False) -> str | None:
     if value is None:
         return None
     slug = slugify(str(value))
@@ -248,7 +248,7 @@ def normalize_topic_name(value: str | None) -> str | None:
     for topic, label in TOPIC_LABELS.items():
         if slug == slugify(label):
             return topic
-    return None
+    return slug if allow_unknown and slug else None
 
 
 def topic_from_heading(heading: str) -> str | None:
@@ -261,6 +261,64 @@ def topic_from_link_target(target: str) -> str | None:
     if match:
         return match.group(2)
     return None
+
+
+def topic_label_for(topic: str) -> str:
+    return TOPIC_LABELS.get(topic, topic.replace("-", " ").title())
+
+
+def _is_generic_heading(slug: str) -> bool:
+    return slug in {
+        "highlights",
+        "summary",
+        "notes",
+        "links",
+        "resources",
+        "references",
+        "episodes",
+        "episode notes",
+        "connective logic",
+        "how it links outward",
+        "what this channel contributes",
+        "why it matters",
+        "why it is in this wiki",
+        "current wiki status",
+        "latest episode surface",
+        "dominant themes",
+        "what this source contributes",
+        "core question",
+        "core idea",
+        "typical video anchors",
+        "source pages",
+        "topic graph",
+    }
+
+
+def _topic_hint_from_heading(heading: str) -> str | None:
+    slug = slugify(heading)
+    mapped = normalize_topic_name(heading)
+    if mapped in TOPIC_ORDER:
+        return mapped
+    if not slug or _is_generic_heading(slug):
+        return None
+    if len(slug.split()) <= 4:
+        return slug
+    return None
+
+
+def discover_topics_from_items(items: Sequence[SourceItem], *, minimum_support: int = 2) -> list[str]:
+    counts: Counter[str] = Counter()
+    for item in items:
+        hint = normalize_topic_name(item.topic_hint, allow_unknown=True)
+        if hint:
+            counts[hint] += 1
+        for topic in TOPIC_ORDER:
+            if score_topic_item(item, topic, reference_date=item.published or date.today()) > 0:
+                counts[topic] += 1
+    discovered = [topic for topic in TOPIC_ORDER if counts.get(topic)]
+    extras = [topic for topic, count in counts.items() if topic not in TOPIC_ORDER and count >= minimum_support]
+    extras.sort(key=lambda topic: (-counts[topic], topic))
+    return discovered + extras
 
 
 def _count_phrase(text: str, phrase: str) -> int:
@@ -288,10 +346,25 @@ def tokenize(text: str) -> list[str]:
     return TOKEN_RE.findall(text.lower())
 
 
+@lru_cache(maxsize=1)
+def _embedding_backend():
+    try:
+        from sentence_transformers import SentenceTransformer  # type: ignore
+    except Exception:
+        return None
+    return SentenceTransformer("all-MiniLM-L6-v2")
+
+
 @lru_cache(maxsize=None)
-def _topic_embedding_profile(topic: str) -> Counter[str]:
+def _topic_embedding_profile(topic: str):
+    backend = _embedding_backend()
+    if backend is not None:
+        text = _topic_embedding_text(topic)
+        vector = backend.encode([text], normalize_embeddings=True)
+        return tuple(float(value) for value in vector[0])
+
     counts: Counter[str] = Counter()
-    descriptor_tokens = tokenize(TOPIC_LABELS.get(topic, topic))
+    descriptor_tokens = tokenize(topic_label_for(topic))
     for token in descriptor_tokens:
         counts[token] += 2
     for phrase in TOPIC_LEXICON.get(topic, []):
@@ -304,23 +377,54 @@ def _topic_embedding_profile(topic: str) -> Counter[str]:
     return counts
 
 
-def _cosine_similarity(left: Counter[str], right: Counter[str]) -> float:
-    if not left or not right:
+def _topic_embedding_text(topic: str) -> str:
+    phrases = "; ".join(TOPIC_LEXICON.get(topic, [])[:20])
+    return f"{topic_label_for(topic)}. {phrases}".strip()
+
+
+def _vector_cosine(left, right) -> float:
+    if left is None or right is None:
+        return 0.0
+    if len(left) != len(right):
         return 0.0
     dot = 0.0
-    for token, value in left.items():
-        if token in right:
-            dot += value * right[token]
-    if dot <= 0:
+    left_norm = 0.0
+    right_norm = 0.0
+    for l_value, r_value in zip(left, right):
+        l = float(l_value)
+        r = float(r_value)
+        dot += l * r
+        left_norm += l * l
+        right_norm += r * r
+    if dot <= 0 or left_norm == 0 or right_norm == 0:
         return 0.0
-    left_norm = math.sqrt(sum(value * value for value in left.values()))
-    right_norm = math.sqrt(sum(value * value for value in right.values()))
-    if left_norm == 0 or right_norm == 0:
-        return 0.0
-    return dot / (left_norm * right_norm)
+    return dot / (math.sqrt(left_norm) * math.sqrt(right_norm))
+
+
+def _cosine_similarity(left, right) -> float:
+    if isinstance(left, Counter) and isinstance(right, Counter):
+        if not left or not right:
+            return 0.0
+        dot = 0.0
+        for token, value in left.items():
+            if token in right:
+                dot += value * right[token]
+        if dot <= 0:
+            return 0.0
+        left_norm = math.sqrt(sum(value * value for value in left.values()))
+        right_norm = math.sqrt(sum(value * value for value in right.values()))
+        if left_norm == 0 or right_norm == 0:
+            return 0.0
+        return dot / (left_norm * right_norm)
+    return _vector_cosine(left, right)
 
 
 def topic_embedding_signal(text: str, topic: str) -> float:
+    backend = _embedding_backend()
+    if backend is not None:
+        vector = backend.encode([text], normalize_embeddings=True)
+        return _cosine_similarity(vector[0], _topic_embedding_profile(topic))
+
     tokens = tokenize(text)
     if not tokens:
         return 0.0
@@ -433,17 +537,17 @@ def _frontmatter_default_source(meta: dict[str, object], fallback: str) -> str:
 def _frontmatter_default_topic(meta: dict[str, object]) -> str | None:
     for key in ("topic", "primary_topic", "subject"):
         if key in meta:
-            topic = normalize_topic_name(meta[key])
+            topic = normalize_topic_name(meta[key], allow_unknown=True)
             if topic:
                 return topic
     topics = meta.get("topics")
     if isinstance(topics, list):
         for value in topics:
-            topic = normalize_topic_name(value)
+            topic = normalize_topic_name(value, allow_unknown=True)
             if topic:
                 return topic
     elif topics is not None:
-        topic = normalize_topic_name(topics)
+        topic = normalize_topic_name(topics, allow_unknown=True)
         if topic:
             return topic
     return None
@@ -472,11 +576,20 @@ def parse_source_markdown(path: str | Path, source_name: str) -> list[SourceItem
         line = raw.strip()
         if not line:
             continue
-        if line.startswith("#"):
-            current_section = slugify(line.lstrip("# "))
-            mapped = topic_from_heading(line.lstrip("# "))
+        if line.startswith("### "):
+            current_section = slugify(line[4:])
+            mapped = _topic_hint_from_heading(line[4:])
             if mapped:
                 current_topic = mapped
+            continue
+        if line.startswith("## "):
+            current_section = slugify(line[3:])
+            mapped = _topic_hint_from_heading(line[3:])
+            if mapped:
+                current_topic = mapped
+            continue
+        if line.startswith("# "):
+            current_section = slugify(line[2:])
             continue
         if line.startswith(("-", "*")):
             parsed = _parse_bullet_line(line)
@@ -525,9 +638,15 @@ def score_topic_item(item: SourceItem, topic: str, reference_date: date | None =
     return combined * source_weight * recency * item.confidence
 
 
-def rank_topics(items: Sequence[SourceItem], reference_date: date | None = None) -> list[TopicRanking]:
+def rank_topics(
+    items: Sequence[SourceItem],
+    reference_date: date | None = None,
+    topic_order: Sequence[str] | None = None,
+) -> list[TopicRanking]:
     if reference_date is None:
         reference_date = date.today()
+    if topic_order is None:
+        topic_order = TOPIC_ORDER
 
     base_scores: dict[str, float] = defaultdict(float)
     representative: dict[str, list[tuple[float, SourceItem]]] = defaultdict(list)
@@ -535,7 +654,7 @@ def rank_topics(items: Sequence[SourceItem], reference_date: date | None = None)
     days_by_topic: dict[str, set[date]] = defaultdict(set)
 
     for item in items:
-        for topic in TOPIC_ORDER:
+        for topic in topic_order:
             score = score_topic_item(item, topic, reference_date=reference_date)
             if score <= 0:
                 continue
@@ -546,7 +665,7 @@ def rank_topics(items: Sequence[SourceItem], reference_date: date | None = None)
                 days_by_topic[topic].add(item.published)
 
     results: list[TopicRanking] = []
-    for topic in TOPIC_ORDER:
+    for topic in topic_order:
         base = base_scores.get(topic, 0.0)
         if base <= 0:
             continue
@@ -575,7 +694,7 @@ def rank_topics(items: Sequence[SourceItem], reference_date: date | None = None)
             )
         )
 
-    results.sort(key=lambda ranking: (-ranking.score, TOPIC_ORDER.index(ranking.topic)))
+    results.sort(key=lambda ranking: (-ranking.score, topic_order.index(ranking.topic)))
     return results
 
 
@@ -600,7 +719,7 @@ def render_markdown_report(rankings: Sequence[TopicRanking], reference_date: dat
     ]
 
     for index, ranking in enumerate(rankings, start=1):
-        label = TOPIC_LABELS.get(ranking.topic, ranking.topic)
+        label = topic_label_for(ranking.topic)
         lines.append(f"## {index}. {ranking.topic}")
         lines.append("")
         lines.append(f"- **Label:** {label}")
@@ -683,7 +802,9 @@ def build_ranking_from_paths(month_graph: str | Path | None = None, channel_page
         path = Path(path)
         source_name = SOURCE_NAME_OVERRIDES.get(path.stem, path.stem.replace("-", " ").title())
         items.extend(parse_source_markdown(path, source_name=source_name))
-    return rank_topics(_dedupe_items(items))
+    items = _dedupe_items(items)
+    topic_order = discover_topics_from_items(items)
+    return rank_topics(items, topic_order=topic_order)
 
 
 def write_outputs(rankings: Sequence[TopicRanking], markdown_path: str | Path | None = None, json_path: str | Path | None = None, reference_date: date | None = None) -> None:
@@ -701,7 +822,7 @@ def write_outputs(rankings: Sequence[TopicRanking], markdown_path: str | Path | 
             "topics": [
                 {
                     "topic": ranking.topic,
-                    "label": TOPIC_LABELS.get(ranking.topic, ranking.topic),
+                    "label": topic_label_for(ranking.topic),
                     "score": round(ranking.score, 6),
                     "evidence_score": round(ranking.evidence_score, 6),
                     "item_count": ranking.item_count,
