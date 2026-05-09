@@ -42,3 +42,4 @@ Wes Roth is the high-level narrative layer. The videos repeatedly turn AI into q
 - Risk stories point to [compute economics](../topics/compute.md)
 - Product and market coverage point to [distribution](../topics/distribution.md)
 - The channel’s framing complements [AI.Dot Engineer](ai-dot-engineer.md), which explains how those ideas actually get built
+- The month’s emphasis is shaped by [recency-weighting](../topics/recency-weighting.md)

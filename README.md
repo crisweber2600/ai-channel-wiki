@@ -6,7 +6,7 @@ A wiki-style knowledge base built from a one-month window of:
 - **AI.Dot Engineer** — agent engineering, observability, context, multimodal systems, and shipping AI
 - **The AI Daily Brief** — podcast transcript and episode digestion via `https://pod.link/1680633614`
 
-This repo is meant to feel like a real wiki instead of a flat summary. The content is split into pages with deep internal links, topic pages, source pages, and a graph map.
+This repo is meant to feel like a real wiki instead of a flat summary. The content is split into pages with deep internal links, topic pages, source pages, a graph map, and a recency-weighted synthesis layer.
 
 ## How to navigate
 
@@ -22,6 +22,8 @@ The month’s story is a shift from:
 - single-agent demos → agent workflows
 - chat products → embedded systems
 - compute spend → compute as strategic capital
+
+The wiki also uses a recency-weighted consolidation pass so the newest evidence has more influence than older material, without throwing away durable themes.
 
 ## Source pages
 

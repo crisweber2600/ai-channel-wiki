@@ -12,3 +12,4 @@
   - [Multimodal, voice, vision & edge](topics/multimodal.md)
   - [Distribution & product surfaces](topics/distribution.md)
   - [Compute economics](topics/compute.md)
+  - [Recency-weighting](topics/recency-weighting.md)

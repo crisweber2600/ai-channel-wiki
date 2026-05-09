@@ -41,3 +41,4 @@ AI.Dot Engineer is the implementation layer. It focuses on:
 - Voice, vision, and edge connect to [multimodal](../topics/multimodal.md)
 - Product surfaces connect to [distribution](../topics/distribution.md)
 - It is the build complement to [Wes Roth](wes-roth.md)
+- Newer implementation patterns are highlighted by [recency-weighting](../topics/recency-weighting.md)
