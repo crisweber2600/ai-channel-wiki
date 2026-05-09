@@ -19,7 +19,8 @@ Each item gets a score from several signals:
 - **Source authority** — some channels are treated as higher-signal for certain topics
 - **Cross-source repetition** — ideas repeated across multiple sources get boosted
 - **Topical centrality** — items that connect to multiple sections matter more
-- **Semantic matching** — the ranking pass uses an expanded topic lexicon plus local embedding-style similarity to catch paraphrases
+- **Semantic matching** — the ranking pass uses an expanded topic lexicon plus local embedding-style similarity to catch paraphrases; if `sentence_transformers` is installed, it will use a real `all-MiniLM-L6-v2` embedding backend
+- **Topic discovery** — recurring unknown topic hints from source pages can be promoted into the ranking order automatically
 - **Novelty** — brand-new claims are highlighted, but only if they are grounded
 
 A simple version looks like this:

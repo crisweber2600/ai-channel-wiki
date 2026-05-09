@@ -23,7 +23,7 @@ The month’s story is a shift from:
 - chat products → embedded systems
 - compute spend → compute as strategic capital
 
-The wiki also uses a recency-weighted consolidation pass so the newest evidence has more influence than older material, without throwing away durable themes. The ranking helper now blends an expanded topic lexicon with local embedding-style semantic matching so paraphrases and partial matches still land on the right page.
+The wiki also uses a recency-weighted consolidation pass so the newest evidence has more influence than older material, without throwing away durable themes. The ranking helper now blends an expanded topic lexicon with local embedding-style semantic matching so paraphrases and partial matches still land on the right page. It can also discover new topic slugs from source pages when they recur often enough.
 
 ## Source pages
 
