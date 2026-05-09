@@ -1,0 +1,3 @@
+- [GitHub repo](https://github.com/crisweber2600/ai-channel-wiki)
+- [Live site](./)
+- [Source gist](https://gist.github.com/crisweber2600/231df3009d553b1fce61781db9e7d206)

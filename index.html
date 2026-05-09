@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Channel Wiki</title>
+  <meta name="description" content="A wiki-style knowledge base for one month of AI videos and podcast transcripts." />
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" />
+  <style>
+    :root { --bg:#0b1020; --panel:#11182b; --text:#e7edf7; --muted:#9aa7bd; --accent:#7dd3fc; }
+    body { margin:0; font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif; background:var(--bg); color:var(--text); }
+    .content { max-width: 1100px; margin: 0 auto; }
+  </style>
+</head>
+<body>
+  <div id="app">Loading wiki…</div>
+  <script>
+    window.$docsify = {
+      name: 'AI Channel Wiki',
+      repo: '',
+      loadSidebar: true,
+      loadNavbar: true,
+      auto2top: true,
+      coverpage: false,
+      subMaxLevel: 3,
+      search: {
+        placeholder: 'Search wiki',
+        noData: 'No results'
+      },
+      pagination: {
+        previousText: 'Previous',
+        nextText: 'Next'
+      }
+    };
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/docsify@4/lib/docsify.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/docsify/lib/plugins/search.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/docsify-pagination/dist/docsify-pagination.min.js"></script>
+</body>
+</html>
