@@ -4,9 +4,10 @@ import argparse
 import json
 import math
 import re
-from collections import defaultdict
+from collections import Counter, defaultdict
 from dataclasses import dataclass, field
 from datetime import date, datetime
+from functools import lru_cache
 from pathlib import Path
 from typing import Iterable, Sequence
 
@@ -28,69 +29,124 @@ TOPIC_LABELS = {
     "compute": "Compute economics & market structure",
 }
 
-TOPIC_KEYWORDS = {
+TOPIC_LEXICON = {
     "interpretability": [
         "interpretability",
+        "mechanistic interpretability",
+        "feature attribution",
+        "feature attribution and probes",
+        "probes",
+        "circuits",
+        "activation patterns",
         "activations",
+        "neurons",
+        "neuron",
         "hidden behavior",
         "hidden motives",
-        "thoughts",
+        "model internals",
         "black box",
         "alignment",
-        "auditor",
         "evaluation",
         "deception",
-        "nla",
+        "steering",
         "autoencoder",
+        "sparse autoencoder",
+        "latent representation",
+        "circulation of thoughts",
     ],
     "security": [
         "security",
         "systemic risk",
         "cyber",
+        "cybersecurity",
         "attack",
+        "attacks",
+        "prompt injection",
+        "exfiltration",
+        "jailbreak",
+        "jailbreaking",
+        "fraud",
+        "blackmail",
+        "defense",
+        "threat",
+        "misuse",
+        "abuse",
         "banks",
         "financial",
         "liquidity",
         "risk",
-        "threat",
-        "blackmail",
-        "defense",
+        "model abuse",
     ],
     "agents": [
         "agents",
         "agentic",
         "orchestration",
+        "orchestrating",
         "workflow",
-        "skills",
+        "workflows",
+        "tool use",
+        "tool-use",
+        "tool calling",
+        "task routing",
+        "planner",
+        "planning",
+        "task loops",
+        "worker loops",
+        "memory",
+        "state",
         "context",
         "observability",
         "eval",
+        "evaluations",
         "mcp",
-        "plan and review",
-        "production",
+        "runtime",
+        "worker",
+        "workers",
+        "multi-step",
+        "autonomy",
+        "delegation",
+        "helper",
+        "helpers",
+        "coordination",
     ],
     "multimodal": [
         "multimodal",
         "voice",
         "vision",
         "image",
+        "images",
         "video",
         "audio",
+        "speech",
         "edge",
-        "camera",
+        "on-device",
         "local inference",
+        "camera",
+        "realtime",
+        "vision-language",
+        "vision language",
+        "image generation",
+        "video generation",
     ],
     "distribution": [
         "distribution",
         "product",
+        "products",
         "surface",
+        "surfaces",
         "browser",
         "chrome",
         "slack",
         "github",
         "embedded",
-        "workflow",
+        "embedding",
         "interface",
+        "workflow",
+        "ux",
+        "platform",
+        "adoption",
+        "shipping",
+        "surface area",
     ],
     "compute": [
         "compute",
@@ -100,11 +156,23 @@ TOPIC_KEYWORDS = {
         "market",
         "capital",
         "infra",
+        "infrastructure",
         "spend",
         "tokens",
-        "asset",
+        "gpu",
+        "capacity",
+        "data center",
+        "datacenter",
+        "utilization",
+        "inference cost",
+        "cost",
+        "scale",
+        "scaling",
     ],
 }
+
+# Backward-compatible alias used by older tests and docs.
+TOPIC_KEYWORDS = TOPIC_LEXICON
 
 SOURCE_WEIGHTS = {
     "Wes Roth": 1.12,
@@ -127,6 +195,7 @@ SECTION_TO_TOPIC = {
     "distribution and product surfaces": "distribution",
     "distribution platforms and product surfaces": "distribution",
     "compute economics and market structure": "compute",
+    "memory management": "agents",
 }
 
 MONTH_WINDOW_DAYS = 30
@@ -135,6 +204,9 @@ RECENCY_HALF_LIFE_DAYS = 10.0
 TOPIC_LINK_RE = re.compile(r"\[([^\]]+)\]\((?:\.\./)?topics/([a-z0-9\-]+)\.md\)")
 CHANNEL_BULLET_RE = re.compile(r"^-\s+\[(.+?)\]\((https?://[^)]+)\)")
 MONTH_BULLET_RE = re.compile(r"^-\s+(\d{4}-\d{2}-\d{2})\s+—\s+\[(.+?)\]\((https?://[^)]+)\)")
+FRONTMATTER_RE = re.compile(r"^---\s*$")
+BULLET_LINK_RE = re.compile(r"\[([^\]]+)\]\(([^)]+)\)")
+TOKEN_RE = re.compile(r"[a-z0-9]+")
 
 
 @dataclass(frozen=True)
@@ -165,8 +237,30 @@ def slugify(text: str) -> str:
     return re.sub(r"\s+", " ", text).strip()
 
 
+def normalize_topic_name(value: str | None) -> str | None:
+    if value is None:
+        return None
+    slug = slugify(str(value))
+    if slug in TOPIC_ORDER:
+        return slug
+    if slug in SECTION_TO_TOPIC:
+        return SECTION_TO_TOPIC[slug]
+    for topic, label in TOPIC_LABELS.items():
+        if slug == slugify(label):
+            return topic
+    return None
+
+
 def topic_from_heading(heading: str) -> str | None:
-    return SECTION_TO_TOPIC.get(slugify(heading))
+    return normalize_topic_name(heading)
+
+
+def topic_from_link_target(target: str) -> str | None:
+    target = target.strip()
+    match = TOPIC_LINK_RE.search(f"[x]({target})")
+    if match:
+        return match.group(2)
+    return None
 
 
 def _count_phrase(text: str, phrase: str) -> int:
@@ -181,13 +275,57 @@ def _count_phrase(text: str, phrase: str) -> int:
 def topic_signal(text: str, topic: str) -> float:
     normalized = text.lower()
     score = 0.0
-    for phrase in TOPIC_KEYWORDS.get(topic, []):
+    for phrase in TOPIC_LEXICON.get(topic, []):
         hits = _count_phrase(normalized, phrase)
         if hits:
-            score += hits * (1.8 if " " in phrase else 1.0)
+            score += hits * (1.9 if " " in phrase else 1.0)
     if topic in normalized:
         score += 1.0
     return score
+
+
+def tokenize(text: str) -> list[str]:
+    return TOKEN_RE.findall(text.lower())
+
+
+@lru_cache(maxsize=None)
+def _topic_embedding_profile(topic: str) -> Counter[str]:
+    counts: Counter[str] = Counter()
+    descriptor_tokens = tokenize(TOPIC_LABELS.get(topic, topic))
+    for token in descriptor_tokens:
+        counts[token] += 2
+    for phrase in TOPIC_LEXICON.get(topic, []):
+        tokens = tokenize(phrase)
+        if not tokens:
+            continue
+        weight = 3 if len(tokens) > 1 else 2
+        for token in tokens:
+            counts[token] += weight
+    return counts
+
+
+def _cosine_similarity(left: Counter[str], right: Counter[str]) -> float:
+    if not left or not right:
+        return 0.0
+    dot = 0.0
+    for token, value in left.items():
+        if token in right:
+            dot += value * right[token]
+    if dot <= 0:
+        return 0.0
+    left_norm = math.sqrt(sum(value * value for value in left.values()))
+    right_norm = math.sqrt(sum(value * value for value in right.values()))
+    if left_norm == 0 or right_norm == 0:
+        return 0.0
+    return dot / (left_norm * right_norm)
+
+
+def topic_embedding_signal(text: str, topic: str) -> float:
+    tokens = tokenize(text)
+    if not tokens:
+        return 0.0
+    text_vec = Counter(tokens)
+    return _cosine_similarity(text_vec, _topic_embedding_profile(topic))
 
 
 def recency_decay(published: date | None, reference_date: date) -> float:
@@ -198,20 +336,193 @@ def recency_decay(published: date | None, reference_date: date) -> float:
     return math.exp(-age_days / RECENCY_HALF_LIFE_DAYS)
 
 
+def _parse_date_value(value: object) -> date | None:
+    if value is None:
+        return None
+    if isinstance(value, date):
+        return value
+    text = str(value).strip()
+    if not text:
+        return None
+    try:
+        return date.fromisoformat(text[:10])
+    except ValueError:
+        return None
+
+
+def _parse_frontmatter(text: str) -> tuple[dict[str, object], str]:
+    lines = text.splitlines()
+    if not lines or not FRONTMATTER_RE.match(lines[0]):
+        return {}, text
+
+    meta: dict[str, object] = {}
+    body_start = 0
+    i = 1
+    while i < len(lines):
+        if FRONTMATTER_RE.match(lines[i]):
+            body_start = i + 1
+            break
+        raw = lines[i].rstrip()
+        i += 1
+        if not raw or raw.lstrip().startswith("#"):
+            continue
+        if ":" not in raw:
+            continue
+        key, value = raw.split(":", 1)
+        key = key.strip().lower()
+        value = value.strip()
+        if value in {"", "|", ">"}:
+            collected: list[str] = []
+            while i < len(lines):
+                next_line = lines[i]
+                if not next_line.strip():
+                    break
+                if next_line.startswith(" ") or next_line.startswith("\t"):
+                    collected.append(next_line.strip())
+                    i += 1
+                    continue
+                break
+            value = "\n".join(collected)
+        elif value.startswith("[") and value.endswith("]"):
+            value = [part.strip().strip('"\'') for part in value[1:-1].split(",") if part.strip()]
+        meta[key] = value
+    body = "\n".join(lines[body_start:])
+    return meta, body
+
+
+def _extract_topic_hint_from_line(line: str) -> str | None:
+    match = TOPIC_LINK_RE.search(line)
+    if match:
+        return match.group(2)
+    return None
+
+
+def _clean_markdown_text(text: str) -> str:
+    text = BULLET_LINK_RE.sub(lambda match: match.group(1), text)
+    text = text.replace("**", "")
+    text = text.replace("__", "")
+    text = text.strip()
+    text = re.sub(r"\s+", " ", text)
+    return text
+
+
+def _parse_bullet_line(line: str) -> tuple[str, str | None] | None:
+    stripped = line.strip()
+    if not (stripped.startswith("- ") or stripped.startswith("* ")):
+        return None
+    content = stripped[2:].strip()
+    if not content:
+        return None
+    match = BULLET_LINK_RE.search(content)
+    url = None
+    if match:
+        title = match.group(1).strip()
+        url = match.group(2).strip()
+    else:
+        title = content
+    return _clean_markdown_text(title), url
+
+
+def _frontmatter_default_source(meta: dict[str, object], fallback: str) -> str:
+    source = meta.get("source")
+    if source:
+        return str(source)
+    return fallback
+
+
+def _frontmatter_default_topic(meta: dict[str, object]) -> str | None:
+    for key in ("topic", "primary_topic", "subject"):
+        if key in meta:
+            topic = normalize_topic_name(meta[key])
+            if topic:
+                return topic
+    topics = meta.get("topics")
+    if isinstance(topics, list):
+        for value in topics:
+            topic = normalize_topic_name(value)
+            if topic:
+                return topic
+    elif topics is not None:
+        topic = normalize_topic_name(topics)
+        if topic:
+            return topic
+    return None
+
+
+def _frontmatter_default_published(meta: dict[str, object]) -> date | None:
+    for key in ("published", "date", "updated"):
+        if key in meta:
+            parsed = _parse_date_value(meta[key])
+            if parsed is not None:
+                return parsed
+    return None
+
+
+def parse_source_markdown(path: str | Path, source_name: str) -> list[SourceItem]:
+    path = Path(path)
+    meta, body = _parse_frontmatter(path.read_text(encoding="utf-8"))
+    source = _frontmatter_default_source(meta, source_name)
+    default_topic = _frontmatter_default_topic(meta)
+    default_published = _frontmatter_default_published(meta)
+
+    items: list[SourceItem] = []
+    current_topic = default_topic
+    current_section = None
+    for raw in body.splitlines():
+        line = raw.strip()
+        if not line:
+            continue
+        if line.startswith("#"):
+            current_section = slugify(line.lstrip("# "))
+            mapped = topic_from_heading(line.lstrip("# "))
+            if mapped:
+                current_topic = mapped
+            continue
+        if line.startswith(("-", "*")):
+            parsed = _parse_bullet_line(line)
+            if not parsed:
+                continue
+            title, url = parsed
+            link_topic = _extract_topic_hint_from_line(line)
+            topic_hint = link_topic or current_topic or default_topic
+            confidence = 0.84
+            if link_topic:
+                confidence = 0.38
+            if current_section in {"how it links outward", "links into the graph", "connective logic"} and link_topic:
+                confidence = 0.35
+            items.append(
+                SourceItem(
+                    source=source,
+                    title=title,
+                    text=title,
+                    published=default_published,
+                    topic_hint=topic_hint,
+                    url=url,
+                    confidence=confidence,
+                )
+            )
+    return items
+
+
 def score_topic_item(item: SourceItem, topic: str, reference_date: date | None = None) -> float:
     if reference_date is None:
         reference_date = date.today()
 
-    signal = topic_signal(f"{item.title}\n{item.text}", topic)
-    if signal <= 0 and item.topic_hint == topic:
-        signal = 1.2
-    if signal <= 0:
+    text = f"{item.title}\n{item.text}"
+    signal = topic_signal(text, topic)
+    semantic = topic_embedding_signal(text, topic)
+    combined = signal + (semantic * 4.0)
+    if combined <= 0 and item.topic_hint == topic:
+        combined = 1.2
+    elif item.topic_hint == topic:
+        combined *= 1.18
+
+    if combined <= 0:
         return 0.0
 
     source_weight = item.source_weight if item.source_weight != 1.0 else SOURCE_WEIGHTS.get(item.source, 1.0)
     recency = recency_decay(item.published, reference_date)
-    hint_boost = 1.18 if item.topic_hint == topic else 1.0
-    return signal * source_weight * recency * hint_boost * item.confidence
+    return combined * source_weight * recency * item.confidence
 
 
 def rank_topics(items: Sequence[SourceItem], reference_date: date | None = None) -> list[TopicRanking]:
@@ -282,6 +593,7 @@ def render_markdown_report(rankings: Sequence[TopicRanking], reference_date: dat
         "- newer items get higher decay-adjusted weight",
         "- repeated items across sources get boosted",
         "- topic hints are reinforced by keyword evidence from transcripts and notes",
+        "- semantic similarity from local embeddings helps catch paraphrases and partial matches",
         "",
         "## Ranked topics",
         "",
@@ -305,6 +617,18 @@ def render_markdown_report(rankings: Sequence[TopicRanking], reference_date: dat
         lines.append("")
 
     return "\n".join(lines).rstrip() + "\n"
+
+
+def _dedupe_items(items: Iterable[SourceItem]) -> list[SourceItem]:
+    seen: set[tuple[str, str]] = set()
+    deduped: list[SourceItem] = []
+    for item in items:
+        key = (item.url or "", item.title.strip().lower())
+        if key in seen:
+            continue
+        seen.add(key)
+        deduped.append(item)
+    return deduped
 
 
 def parse_month_graph_markdown(path: str | Path, source_name: str) -> list[SourceItem]:
@@ -344,77 +668,11 @@ def parse_month_graph_markdown(path: str | Path, source_name: str) -> list[Sourc
 
 
 def parse_channel_page(path: str | Path, source_name: str) -> list[SourceItem]:
-    path = Path(path)
-    items: list[SourceItem] = []
-    current_topic = None
-    for raw in path.read_text(encoding="utf-8").splitlines():
-        line = raw.strip()
-        if line.startswith("### "):
-            current_topic = topic_from_heading(line[4:])
-            continue
-        if current_topic is None or not line.startswith("-"):
-            continue
-        match = CHANNEL_BULLET_RE.match(line)
-        if not match:
-            continue
-        items.append(
-            SourceItem(
-                source=source_name,
-                title=match.group(1),
-                text=match.group(1),
-                published=None,
-                topic_hint=current_topic,
-                url=match.group(2),
-                confidence=0.82,
-            )
-        )
-    return items
+    return parse_source_markdown(path, source_name=source_name)
 
 
 def parse_link_surface_bullets(path: str | Path, source_name: str) -> list[SourceItem]:
-    path = Path(path)
-    items: list[SourceItem] = []
-    in_link_section = False
-    for raw in path.read_text(encoding="utf-8").splitlines():
-        line = raw.strip()
-        if line.startswith("## "):
-            in_link_section = slugify(line[3:]) in {
-                "links into the graph",
-                "how it links outward",
-                "links into graph",
-            }
-            continue
-        if not in_link_section or not line.startswith("-"):
-            continue
-        match = TOPIC_LINK_RE.search(line)
-        if not match:
-            continue
-        topic = match.group(2)
-        if topic not in TOPIC_ORDER:
-            continue
-        items.append(
-            SourceItem(
-                source=source_name,
-                title=f"graph link: {match.group(1)}",
-                text=match.group(1),
-                published=None,
-                topic_hint=topic,
-                confidence=0.38,
-            )
-        )
-    return items
-
-
-def _dedupe_items(items: Iterable[SourceItem]) -> list[SourceItem]:
-    seen: set[tuple[str, str]] = set()
-    deduped: list[SourceItem] = []
-    for item in items:
-        key = (item.url or "", item.title.strip().lower())
-        if key in seen:
-            continue
-        seen.add(key)
-        deduped.append(item)
-    return deduped
+    return parse_source_markdown(path, source_name=source_name)
 
 
 def build_ranking_from_paths(month_graph: str | Path | None = None, channel_pages: Iterable[str | Path] = ()) -> list[TopicRanking]:
@@ -424,8 +682,7 @@ def build_ranking_from_paths(month_graph: str | Path | None = None, channel_page
     for path in channel_pages:
         path = Path(path)
         source_name = SOURCE_NAME_OVERRIDES.get(path.stem, path.stem.replace("-", " ").title())
-        items.extend(parse_channel_page(path, source_name=source_name))
-        items.extend(parse_link_surface_bullets(path, source_name=source_name))
+        items.extend(parse_source_markdown(path, source_name=source_name))
     return rank_topics(_dedupe_items(items))
 
 

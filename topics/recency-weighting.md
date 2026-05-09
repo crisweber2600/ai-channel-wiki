@@ -19,6 +19,7 @@ Each item gets a score from several signals:
 - **Source authority** — some channels are treated as higher-signal for certain topics
 - **Cross-source repetition** — ideas repeated across multiple sources get boosted
 - **Topical centrality** — items that connect to multiple sections matter more
+- **Semantic matching** — the ranking pass uses an expanded topic lexicon plus local embedding-style similarity to catch paraphrases
 - **Novelty** — brand-new claims are highlighted, but only if they are grounded
 
 A simple version looks like this:
