@@ -14,11 +14,11 @@ This source adds a podcast layer to the YouTube analysis:
 
 ## Latest episode surface
 
-- [The Week the AI Story Shifted](https://pod.link/1680633614/episode/MjI5YzYwMzMtM2FjZS00MWQwLTg5NDItNTAwNjI3ZTJlNDNj)
+- [How to Build an AI Native Team with Mike Cannon-Brookes — context, agents, MCPs, and natural product experiences](https://podcasters.spotify.com/pod/show/nlw/episodes/How-to-Build-an-AI-Native-Team-with-Mike-Cannon-Brookes-e3j4cjo)
 
 ## Current wiki status
 
-The podcast is tracked in the daily digest job. When transcript text is available, the job will expand it into the same topic pages used by the YouTube sources.
+The podcast is tracked in the daily digest job. When transcript text is available, the job will expand it into the same topic pages used by the YouTube sources. When transcript text is partial or missing, the job keeps the episode as lower-confidence evidence instead of discarding it.
 
 ## Links into the graph
 

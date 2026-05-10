@@ -21,7 +21,7 @@ Wes Roth is the high-level narrative layer. The videos repeatedly turn AI into q
 
 ### Security and systemic risk
 
-- [World Banks JUST got scared...](https://www.youtube.com/watch?v=fabe7nYQa1Q)
+- [Claude is a "SYSTEMIC RISK"](https://www.youtube.com/watch?v=fabe7nYQa1Q)
 - [US wants Claude all to itself... because it's "TOO DANGEROUS"](https://www.youtube.com/watch?v=quCJwkDAx0g)
 
 ### Distribution and product surfaces

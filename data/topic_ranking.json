@@ -1,17 +1,23 @@
 {
-  "generated_at": "2026-05-09",
+  "generated_at": "2026-05-10",
   "topics": [
     {
       "topic": "agents",
       "label": "Agentic systems & orchestration",
-      "score": 92.828154,
-      "evidence_score": 48.754283,
-      "item_count": 41,
+      "score": 95.851328,
+      "evidence_score": 50.342084,
+      "item_count": 42,
       "sources": [
         "AI.Dot Engineer",
         "month graph"
       ],
       "representative_items": [
+        {
+          "source": "month graph",
+          "title": "How to Build an AI Native Team with Mike Cannon-Brookes — context, agents, MCPs, and natural product experiences",
+          "published": "2026-05-09",
+          "url": "https://podcasters.spotify.com/pod/show/nlw/episodes/How-to-Build-an-AI-Native-Team-with-Mike-Cannon-Brookes-e3j4cjo"
+        },
         {
           "source": "month graph",
           "title": "Agentic Search for Context Engineering — Leonie Monigatti, Elastic",
@@ -25,12 +31,6 @@
           "url": "https://www.youtube.com/watch?v=o-zkvb0iFDQ"
         },
         {
-          "source": "month graph",
-          "title": "Playground in Prod: Optimising Agents in Production Environments — Samuel Colvin, Pydantic",
-          "published": "2026-05-07",
-          "url": "https://www.youtube.com/watch?v=A48uhxfxbsM"
-        },
-        {
           "source": "AI.Dot Engineer",
           "title": "agents and orchestration",
           "published": null,
@@ -38,17 +38,17 @@
         },
         {
           "source": "month graph",
-          "title": "Skill Issue: How We Used AI to Make Agents Actually Good at Supabase — Pedro Rodrigues, Supabase",
-          "published": "2026-05-04",
-          "url": "https://www.youtube.com/watch?v=GmAQKINjv1E"
+          "title": "Playground in Prod: Optimising Agents in Production Environments — Samuel Colvin, Pydantic",
+          "published": "2026-05-07",
+          "url": "https://www.youtube.com/watch?v=A48uhxfxbsM"
         }
       ]
     },
     {
       "topic": "multimodal",
       "label": "Multimodal, voice, vision & edge",
-      "score": 42.004049,
-      "evidence_score": 22.462058,
+      "score": 39.241913,
+      "evidence_score": 20.98498,
       "item_count": 14,
       "sources": [
         "AI.Dot Engineer",
@@ -89,10 +89,55 @@
       ]
     },
     {
+      "topic": "distribution",
+      "label": "Distribution & product surfaces",
+      "score": 25.538832,
+      "evidence_score": 13.657129,
+      "item_count": 21,
+      "sources": [
+        "AI.Dot Engineer",
+        "The AI Daily Brief",
+        "Wes Roth",
+        "month graph"
+      ],
+      "representative_items": [
+        {
+          "source": "month graph",
+          "title": "How to Build an AI Native Team with Mike Cannon-Brookes — context, agents, MCPs, and natural product experiences",
+          "published": "2026-05-09",
+          "url": "https://podcasters.spotify.com/pod/show/nlw/episodes/How-to-Build-an-AI-Native-Team-with-Mike-Cannon-Brookes-e3j4cjo"
+        },
+        {
+          "source": "Wes Roth",
+          "title": "distribution",
+          "published": null,
+          "url": "../topics/distribution.md"
+        },
+        {
+          "source": "month graph",
+          "title": "Scaling GitHub for your Agents — Sam Morrow, GitHub",
+          "published": "2026-04-27",
+          "url": "https://www.youtube.com/watch?v=0n3MKk7r60w"
+        },
+        {
+          "source": "The AI Daily Brief",
+          "title": "a weekly synthesis layer that ties news to market and product movement",
+          "published": null,
+          "url": null
+        },
+        {
+          "source": "AI.Dot Engineer",
+          "title": "workflows that make AI ship in real products",
+          "published": null,
+          "url": null
+        }
+      ]
+    },
+    {
       "topic": "compute",
       "label": "Compute economics & market structure",
-      "score": 24.847771,
-      "evidence_score": 13.287578,
+      "score": 23.416448,
+      "evidence_score": 12.522165,
       "item_count": 13,
       "sources": [
         "The AI Daily Brief",
@@ -113,10 +158,48 @@
           "url": "https://www.youtube.com/watch?v=pFsfax19yOM"
         },
         {
+          "source": "Wes Roth",
+          "title": "what the market, banks, and governments should fear",
+          "published": null,
+          "url": null
+        },
+        {
           "source": "month graph",
           "title": "The Small Model Infrastructure Nobody Built (So We Did) — Filip Makraduli, Superlinked",
           "published": "2026-05-05",
           "url": "https://www.youtube.com/watch?v=qdh_x-uRs9g"
+        },
+        {
+          "source": "The AI Daily Brief",
+          "title": "a weekly synthesis layer that ties news to market and product movement",
+          "published": null,
+          "url": null
+        }
+      ]
+    },
+    {
+      "topic": "security",
+      "label": "Security & systemic risk",
+      "score": 21.582266,
+      "evidence_score": 12.908054,
+      "item_count": 6,
+      "sources": [
+        "The AI Daily Brief",
+        "Wes Roth",
+        "month graph"
+      ],
+      "representative_items": [
+        {
+          "source": "month graph",
+          "title": "Claude is a \"SYSTEMIC RISK\"",
+          "published": "2026-05-08",
+          "url": "https://www.youtube.com/watch?v=fabe7nYQa1Q"
+        },
+        {
+          "source": "The AI Daily Brief",
+          "title": "Security & systemic risk",
+          "published": null,
+          "url": "../topics/security.md"
         },
         {
           "source": "Wes Roth",
@@ -125,64 +208,25 @@
           "url": null
         },
         {
-          "source": "month graph",
-          "title": "Mergeable by default: Building the context engine to save time and tokens — Peter Werry, Unblocked",
-          "published": "2026-05-03",
-          "url": "https://www.youtube.com/watch?v=5ID22ACI7IM"
-        }
-      ]
-    },
-    {
-      "topic": "distribution",
-      "label": "Distribution & product surfaces",
-      "score": 22.909965,
-      "evidence_score": 12.251318,
-      "item_count": 20,
-      "sources": [
-        "AI.Dot Engineer",
-        "The AI Daily Brief",
-        "Wes Roth",
-        "month graph"
-      ],
-      "representative_items": [
-        {
-          "source": "month graph",
-          "title": "Scaling GitHub for your Agents — Sam Morrow, GitHub",
-          "published": "2026-04-27",
-          "url": "https://www.youtube.com/watch?v=0n3MKk7r60w"
-        },
-        {
           "source": "Wes Roth",
-          "title": "distribution",
+          "title": "security",
           "published": null,
-          "url": "../topics/distribution.md"
-        },
-        {
-          "source": "The AI Daily Brief",
-          "title": "a weekly synthesis layer that ties news to market and product movement",
-          "published": null,
-          "url": null
-        },
-        {
-          "source": "AI.Dot Engineer",
-          "title": "workflows that make AI ship in real products",
-          "published": null,
-          "url": null
+          "url": "../topics/security.md"
         },
         {
           "source": "month graph",
-          "title": "Shipping complex AI applications — Braintrust & Trainline",
+          "title": "US wants Claude all to itself... because it's \"TOO DANGEROUS\"",
           "published": "2026-05-01",
-          "url": "https://www.youtube.com/watch?v=ZdheJTfLu-s"
+          "url": "https://www.youtube.com/watch?v=quCJwkDAx0g"
         }
       ]
     },
     {
       "topic": "interpretability",
       "label": "Interpretability & hidden behavior",
-      "score": 17.724519,
-      "evidence_score": 9.653877,
-      "item_count": 26,
+      "score": 17.277509,
+      "evidence_score": 9.410408,
+      "item_count": 27,
       "sources": [
         "AI.Dot Engineer",
         "The AI Daily Brief",
@@ -219,50 +263,6 @@
           "title": "Collaborative AI Engineering: One Dev, Two Dozen Agents, Zero Alignment — Maggie Appleton, GitHub",
           "published": "2026-04-26",
           "url": "https://www.youtube.com/watch?v=ClWD8OEYgp8"
-        }
-      ]
-    },
-    {
-      "topic": "security",
-      "label": "Security & systemic risk",
-      "score": 13.905261,
-      "evidence_score": 8.316544,
-      "item_count": 6,
-      "sources": [
-        "The AI Daily Brief",
-        "Wes Roth",
-        "month graph"
-      ],
-      "representative_items": [
-        {
-          "source": "The AI Daily Brief",
-          "title": "Security & systemic risk",
-          "published": null,
-          "url": "../topics/security.md"
-        },
-        {
-          "source": "month graph",
-          "title": "World Banks JUST got scared...",
-          "published": "2026-05-08",
-          "url": "https://www.youtube.com/watch?v=fabe7nYQa1Q"
-        },
-        {
-          "source": "Wes Roth",
-          "title": "what the market, banks, and governments should fear",
-          "published": null,
-          "url": null
-        },
-        {
-          "source": "Wes Roth",
-          "title": "security",
-          "published": null,
-          "url": "../topics/security.md"
-        },
-        {
-          "source": "month graph",
-          "title": "US wants Claude all to itself... because it's \"TOO DANGEROUS\"",
-          "published": "2026-05-01",
-          "url": "https://www.youtube.com/watch?v=quCJwkDAx0g"
         }
       ]
     }
